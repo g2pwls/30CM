@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_name %}{% endblock page_name %}| 30cm</title>
+    <style>
+        /* Flexbox 레이아웃을 위한 스타일 추가 */
+        .layout-container {
+            display: flex; /* 카테고리와 콘텐츠를 가로로 배치 */
+            align-items: flex-start; /* 세로 정렬 (맨 위로) */
+        }
+
+        .categories {
+            width: 200px; /* 카테고리의 고정 너비 */
+            background-color: #f8f9fa; /* 배경색 */
+            border-right: 1px solid #ddd; /* 오른쪽 경계선 */
+            padding: 10px; /* 내부 여백 */
+            box-sizing: border-box; /* 패딩 포함 너비 계산 */
+        }
+
+        main {
+            flex-grow: 1; /* 나머지 공간 차지 */
+            background-color: #ffffff; /* 배경색 */
+            box-sizing: border-box; /* 패딩 포함 너비 계산 */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        {% block search-bar %}{% endblock search-bar %}
+        {% include "shop/header.html" %}
+    </header>
+    <div class="card my-4" id="categories-card"style="width: 160px;">
+        <div class="card-body"style="width: 170px; margin-top: 20px;">
+            {% load static %}
+            <link rel="stylesheet" href="/static/css/head.css">
+            <div class="dropdown-menu-container">
+                <ul class="dropdown-menu">
+                    {% for category in categories %}
+                    <li class="dropdown-item">
+                        <a href="{% url 'shop:product_category' category.slug %}">
+                            {{ category.name }}
+                        </a>
+                        {% if category.subcategories.exists %}
+                        <ul class="submenu">
+                            {% for subcategory in category.subcategories.all %}
+                            <li>
+                                <a href="{% url 'shop:product_subcategory' category.slug subcategory.slug %}">
+                                    {{ subcategory.name }}
+                                </a>
+                                {% if subcategory.nested_subcategories.exists %}
+                                <ul class="nested-submenu">
+                                    {% for nested_subcategory in subcategory.nested_subcategories.all %}
+                                    <li>
+                                        <a href="{% url 'shop:product_nested_subcategory' category.slug subcategory.slug nested_subcategory.slug %}">
+                                            {{ nested_subcategory.name }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            const firstCategory = document.getElementById('first-category'); // 첫 번째 카테고리
+            const submenu = firstCategory.querySelector('.submenu'); // 첫 번째 카테고리의 서브 메뉴
+        
+            item.addEventListener('mouseover', () => {
+                // 서브 메뉴 활성화
+                submenu.style.display = 'block';
+            });
+        
+            item.addEventListener('mouseout', () => {
+                // 서브 메뉴 비활성화
+                submenu.style.display = 'none';
+            });
+        });
+        
+    </script>
+    <div class="content">   
+    {% block content %}{% endblock content %}
+    </div>
+    
+    <footer>
+        <div class="footer-container" style="margin-left: 20px;">
+            <div class="customer-service">
+                <h3>고객 센터 <strong>1644-0560</strong></h3>
+                <p>운영시간 : 평일 09:00 ~ 18:00 (점심시간 12:00 ~ 13:00 제외)</p>
+                <div>
+                    <button class="footer-btn faq-button">FAQ</button>
+                    <button class="footer-btn contact-button">1:1 문의</button>
+                </div>
+            </div>
+            <div class="footer-menus">
+                <div class="notice">
+                    <h4>NOTICE</h4>
+                    <ul>
+                        <li>[공지] 개인정보 처리방침 개정 예정 안내 (시행일: 2024년 10월 23일)</li>
+                        <li>[공지] 현대카드 2% 청구 할인 프로모션 종료 안내</li>
+                    </ul>
+                </div>
+                <div class="about-us">
+                    <h4>ABOUT US</h4>
+                    <ul>
+                        <li>29CM 소개</li>
+                        <li>인재채용</li>
+                        <li>상시 할인 혜택</li>
+                    </ul>
+                </div>
+                <div class="my-order">
+                    <h4>MY ORDER</h4>
+                    <ul>
+                        <li>주문배송</li>
+                        <li>취소/교환/반품 내역</li>
+                        <li>상품리뷰내역</li>
+                    </ul>
+                </div>
+                <div class="my-account">
+                    <h4>MY ACCOUNT</h4>
+                    <ul>
+                        <li><a href="http://127.0.0.1:8000/users/update/">회원정보수정</a></li>
+                        <li>회원등급</li>
+                        <li>마일리지현황</li>
+                        <li>쿠폰</li>
+                    </ul>
+                </div>
+                <div class="help">
+                    <h4>HELP</h4>
+                    <ul>
+                        <li>1:1 문의</li>
+                        <li><a href="http://127.0.0.1:8000/users/product-qna/">상품QnA내역</a></li>
+                        <li>공지사항</li>
+                        <li>고객의 소리</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="company-info">
+                <p>상호명 : (주)무신사 | 사업자등록번호 : 211-88-79575 | 통신판매업 신고 : 2022-서울성동-01952</p>
+                <p>이메일: customer@29cm.co.kr</p>
+            </div>
+        </div>
+    </footer>
+    <style>
+        footer {
+            color: #333;
+            padding: 20px 10%;
+            font-size: 13px;
+        }
+        
+        .footer-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .customer-service h3 strong {
+            color: #000;
+        }
+        
+        .footer-menus {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .footer-menus h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .footer-menus ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-menus li {
+            margin-bottom: 5px;
+        }
+        
+        .company-info p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .footer-btn {
+            background-color: #000;
+            color: #fff;
+            padding: 5px 10px;
+            margin-right: 10px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>            
+</body>
+</html>

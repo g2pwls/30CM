@@ -1,0 +1,678 @@
+{% extends "shop/base.html" %}
+{% block page_title %}
+    {{product.p_name}}
+{% endblock page_title %}
+{% block content %}
+<h2>
+    BRAND HOME  
+    <a href="{% url 'users:user_profile' product.host.username %}">{{ product.host.username }}</a>
+    {% if product.host.superhost %}
+        (superhost)
+    {% endif %}
+</h2>
+<div class="product-page-container">
+<div class="product-detail-container" style="width: 1150px;">
+    <!-- 왼쪽: 이미지 -->
+    <div class="product-image" style="margin-right: 20px;">
+        <img src="{{ product.head_image.url }}" alt="{{ product.name }}" class="product-head-image">
+    </div>
+    
+    <!-- 오른쪽: 상품 정보 -->
+    <div class="product-header-line">
+
+    <div class="product-info">
+        <div class="product-header">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <div id="like-section" class="like-section" style="margin-left: 200px;">
+                <button id="like-btn" onclick="toggleLike({{ product.id }})" class="like-button">
+                    {% if user_has_liked %}
+                        ❤️
+                    {% else %}
+                        🤍
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+        
+        <h3 class="product-price">{{ product.price }}원</h1>
+
+            <div class="additional-info">
+                <div class="info-row">
+                    <span class="info-title">구매 적립금</span>
+                    <span class="info-description">최대 273 마일리지 적립 예정</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-title">무이자 할부</span>
+                    <span class="info-description">
+                        <a href="#" class="info-link">카드사별 할부 혜택 안내</a>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-title">배송정보</span>
+                    <span class="info-description" style="margin-left: 15px;">주문 제작 7일 이내 출고</span>
+                </div>
+            </div>
+
+            <style>
+                .additional-info {
+                    margin-top: 15px; /* 위 여백 */
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px; /* 각 행 사이 간격 */
+                }
+                
+                .info-row {
+                    display: flex; /* 제목과 설명을 가로로 배치 */
+                    flex-direction: row;
+                    font-size: 14px; /* 글자 크기 */
+                    color: #333; /* 글자 색상 */
+                }
+                
+                .info-title {
+                    font-weight: bold; /* 제목 강조 */
+                    color: #333; /* 제목 색상 */
+                    margin-right: 40px;
+                }
+                
+                .info-description {
+                    color: #555; /* 설명 색상 */
+                }
+                
+                .info-link {
+                    text-decoration: underline; /* 밑줄 표시 */
+                    color: #0073e6; /* 링크 색상 */
+                }
+                
+                .info-link:hover {
+                    color: #005bb5; /* 링크 호버 시 색상 변경 */
+                }
+                
+            </style>
+
+        <!-- 장바구니 버튼 -->
+        <div class="product-payment">    
+            {% if product.stock > 0 %}
+            <form method="post" action="{% url 'cart:add_cart' product.id %}">
+                {% csrf_token %}
+                <label for="sizecategory"></label>
+                <select name="sizecategory" id="sizecategory" required style="width: 546.6px;height: 35.6px;margin-top: 50px;border: 1px solid #acacac;">
+                    {% for size in sizes %}
+                        <option value="{{ size.id }}">{{ size.name }}</option>
+                    {% endfor %}
+                </select><br><br>
+            
+                <label for="colorcategory"></label>
+                <select name="colorcategory" id="colorcategory" required style="width: 546.6px;height: 35.6px;border: 1px solid #acacac;">
+                    {% for color in colors %}
+                        <option value="{{ color.id }}">{{ color.name }}</option>
+                    {% endfor %}
+                </select><br><br>
+            
+                <input type="hidden" name="quantity" id="quantity" value="1" min="1" /style="width: 546.6px;height: 35.6px;border: 1px solid #acacac;"><br>
+                
+                <!-- 옵션과 수량 선택 정보 -->
+                <div class="selected-option-container" id="selected-option" style="display: none;margin-top: 0px;width: 517px;">
+                    <div class="selected-option">
+                        <span id="selected-info" style="margin-right: 90px;"></span>
+                        <div class="quantity-control">
+                            <button type="button" onclick="updateQuantity(-1)">-</button>
+                            <input type="number" id="option-quantity" value="1" min="1" onchange="calculatePrice()">
+                            <button type="button" onclick="updateQuantity(1)">+</button>
+                        </div>
+                        <div class="total-price" style="margin-left: 30px;">
+                            <span style="font-size:15px">총 상품 금액: </span>
+                            <strong id="total-price" style="font-size: 18px;font-weight: bold;color:#ff4800;">0원</strong>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    /* 선택한 옵션 컨테이너 */
+                    .selected-option-container {
+                        margin-top: 20px;
+                        padding: 15px;
+                        border: 1px solid #ddd;
+                        background-color: #f9f9f9;
+                    }
+
+                    .selected-option {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        font-size: 14px;
+                        gap: 20px;
+                    }
+
+                    .quantity-control {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .quantity-control button {
+                        background-color: #ddd;
+                        border: none;
+                        padding: 5px 10px;
+                        cursor: pointer;
+                    }
+
+                    .quantity-control input {
+                        width: 50px;
+                        text-align: center;
+                        border: 1px solid #ddd;
+                        margin: 0 5px;
+                    }
+
+                </style>
+                <script>
+                    function updateFormQuantity() {
+                        const quantityInput = document.getElementById("quantity");
+                        const dynamicQuantity = document.getElementById("option-quantity").value; // 동적 수량 값 가져오기
+                        quantityInput.value = dynamicQuantity; // 폼 수량 필드 업데이트
+                    }
+                    
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const sizeSelect = document.getElementById("sizecategory");
+                        const colorSelect = document.getElementById("colorcategory");
+                        const quantityInput = document.getElementById("option-quantity");
+                        const totalPriceElement = document.getElementById("total-price");
+                        const selectedOptionContainer = document.getElementById("selected-option");
+                        const selectedInfo = document.getElementById("selected-info");
+                    
+                        const productPrice = parseInt("{{ product.price }}"); // 상품 기본 가격
+                    
+                        function calculatePrice() {
+                            const quantity = parseInt(quantityInput.value);
+                            const totalPrice = productPrice * quantity;
+                            totalPriceElement.textContent = `${totalPrice.toLocaleString()}원`;
+                        }
+                    
+                        function updateQuantity(change) {
+                            let quantity = parseInt(quantityInput.value);
+                            quantity += change;
+                            if (quantity < 1) quantity = 1; // 최소 수량 제한
+                            quantityInput.value = quantity;
+                            calculatePrice();
+                        }
+                    
+                        // 옵션 선택 시 실행
+                        function handleOptionChange() {
+                            const selectedSize = sizeSelect.options[sizeSelect.selectedIndex].text;
+                            const selectedColor = colorSelect.options[colorSelect.selectedIndex].text;
+                    
+                            if (selectedSize && selectedColor) {
+                                selectedInfo.textContent = `${selectedSize}, ${selectedColor}`;
+                                selectedOptionContainer.style.display = "flex";
+                                calculatePrice();
+                            }
+                        }
+                    
+                        // 이벤트 리스너 연결
+                        sizeSelect.addEventListener("change", handleOptionChange);
+                        colorSelect.addEventListener("change", handleOptionChange);
+                        quantityInput.addEventListener("change", calculatePrice);
+                    
+                        // 수량 조절 버튼 이벤트
+                        window.updateQuantity = updateQuantity; // 외부에서 접근 가능하도록 설정
+                        
+                    });
+                    
+                </script>
+
+                <div class="button-container">
+                    <!-- 장바구니 담기 버튼 -->
+                    <form method="post" action="{% url 'cart:add_cart' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="cart-button" onclick="updateFormQuantity()">장바구니 담기</button>
+                    </form>
+                
+                    <!-- 바로 구매하기 버튼 -->
+                    <form method="post" action="{% url 'shop:direct_purchase' product.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1" id="direct-quantity">
+                        <input type="hidden" name="sizecategory" id="direct-sizecategory">
+                        <input type="hidden" name="colorcategory" id="direct-colorcategory">
+                        <button type="submit" class="buy-button">바로 구매하기</button>
+                    </form>
+                </div>
+                
+                <style>
+                    /* 버튼 컨테이너 */
+                    .button-container {
+                        display: flex; /* 버튼들을 가로로 나란히 배치 */
+                        gap: 0; /* 버튼 사이의 간격 제거 */
+                        margin-top: 20px;
+                    }
+
+                /* 장바구니 담기 버튼 */
+                .cart-button {
+                    width: 275px;
+                    height: 50px;
+                    background-color: #fff; /* 흰색 배경 */
+                    color: #000; /* 글자색 검정 */
+                    border: 1px solid #ddd; /* 테두리 */
+                    font-weight: bold;
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    outline: none;
+                }
+
+                /* 바로 구매하기 버튼 */
+                .buy-button {
+                    width: 275px;
+                    height: 50px;
+                    background-color: #000; /* 검정색 배경 */
+                    color: #fff; /* 글자색 흰색 */
+                    border: none; /* 테두리 없음 */
+                    font-weight: bold;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+                    transition: all 0.3s ease;
+                }
+
+                /* 버튼 호버 효과 */
+                .cart-button:hover {
+                    background-color: #f8f8f8; /* 호버 시 연한 회색 */
+                }
+
+                .buy-button:hover {
+                    background-color: #333; /* 호버 시 어두운 검정색 */
+                }
+
+                </style>
+
+                
+                <script>
+                    document.getElementById("direct-purchase-form").addEventListener("submit", function (e) {
+                        // 선택된 값 가져오기
+                        const quantity = document.getElementById("quantity").value;
+                        const size = document.getElementById("sizecategory").value;
+                        const color = document.getElementById("colorcategory").value;
+                
+                        // Hidden input에 값 설정
+                        document.getElementById("direct-quantity").value = quantity;
+                        document.getElementById("direct-sizecategory").value = size;
+                        document.getElementById("direct-colorcategory").value = color;
+                    });
+                </script>
+            </form>
+
+            {% endif %}
+        </div>
+        <script>
+            var IMP = window.IMP; 
+            IMP.init("imp71874747"); 
+    
+            function requestPay() {
+              IMP.request_pay({
+                pg: "html5_inicis",
+                pay_method: "card",
+                merchant_uid: "ORD20180131-0000011",   // 주문번호
+                name: "{{ product.name }}",
+                amount: "{{ product.price }}",                         // 숫자 타입
+                buyer_email: "gildong@gmail.com",
+                buyer_name: "{{ user.last_name }}",
+                buyer_tel: "{{ user.tel}}",
+                buyer_addr: "{{ user.address }}",
+                buyer_postcode: "{{ user.postcode }}"
+              }, function (rsp) { // callback
+                //rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.
+                if ( rsp.success ) {
+                    jquery.ajax({
+                        url:"/payments/complete/",
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            imp_uid : rsp.imp_uid
+                        }
+                    }).done(function(data) {
+                        //[2] 서버에서 REST API로 결제정보확인 및 서비스루틴이 정상적인 경우
+                        alert("ajax done");               
+                        console.log("ajax done");
+                        if ( everythings_fine ) {
+                         var msg = '결제가 완료되었습니다.';
+                         msg += '\n고유ID : ' + rsp.imp_uid;
+                         msg += '\n상점 거래ID : ' + rsp.merchant_uid;
+                         msg += '\결제 금액 : ' + rsp.paid_amount;
+                         msg += '카드 승인번호 : ' + rsp.apply_num;
+    
+                         alert(msg);
+                         console.log(msg);
+                        } else {
+                         //[3] 아직 제대로 결제가 되지 않았습니다.
+                         //[4] 결제된 금액이 요청한 금액과 달라 결제를 자동취소처리하였습니다.
+                         var msg = '결제에 실패하였습니다.';
+                         msg += '에러내용 : ' + rsp.error_msg;
+                 
+                         alert(msg);
+                         console.log(msg);
+                        }
+            }).fail(function () {
+    
+                alert("ajax fail");
+    
+                console.log("ajax fail");
+    
+            }).always(function () {
+    
+                alert("ajax always");
+    
+                console.log("ajax always");
+              });
+            } else {
+    
+                var msg = '결제에 실패하였습니다.';
+    
+                msg += '에러내용 : ' + rsp.error_msg;
+    
+    
+                alert(msg);
+            }
+        });
+    }
+    
+          </script>
+    
+
+    </div>
+</div>
+
+<script>
+    function toggleLike(productId) {
+        const likeButton = document.getElementById('like-btn');
+        const likeCountSpan = document.getElementById('like-count');
+
+        fetch(`/shop/product/${productId}/toggle_like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // CSRF 토큰 설정
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.liked) {
+                likeButton.innerHTML = '❤️';
+            } else {
+                likeButton.innerHTML = '🤍';
+            }
+            likeCountSpan.innerText = data.like_count;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    function toggleImage() {
+        const imageContainer = document.getElementById("productImage").parentElement; // 이미지 컨테이너 가져오기
+        const fadeEffect = document.getElementById("imageFade"); // 흐림 효과 레이어
+        const button = document.querySelector(".toggle-button"); // 버튼 요소
+    
+        if (imageContainer.classList.contains("expanded")) {
+            // 이미지 접기
+            imageContainer.classList.remove("expanded");
+            fadeEffect.style.opacity = "1"; // 흐림 효과 나타내기
+            button.textContent = "상품설명 더보기 ▼";
+        } else {
+            // 이미지 펼치기
+            imageContainer.classList.add("expanded");
+            fadeEffect.style.opacity = "0"; // 흐림 효과 숨기기
+            button.textContent = "상품설명 접기 ▲";
+        }
+    }
+    
+    
+</script>
+<div class="product-number">
+    <p class="product-info">상품정보</p>
+    <p class="product-id">상품번호: {{ product.id }}</p>
+</div>
+    <div class="product-number">
+        <p class="product-info">상품설명</p>
+    </div>
+    <div class="product-section">
+        <div class="product-headimage-container">
+            <!-- 이미지와 흐림 효과 -->
+            <div class="product-headimage" id="productImage">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-head-himage">
+            </div>
+            <div class="image-fade" id="imageFade"></div>
+        </div>
+        <button class="toggle-button" onclick="toggleImage()">상품설명 더보기 ▼</button>
+    </div>
+    
+
+    <div class="product-qna" style="width: 1000px;">
+        <input type="hidden" id="productId" value="{{ product.id }}">
+        {% include 'qna_index.html' with qnas=qnas qna_categories=qna_categories %}  <!-- qna_categories 전달 -->
+    </div>
+    <!-- 배송정보 섹션 -->
+    <div class="delivery-info"style="width: 1000px;margin:0 auto;">
+        <h3>배송정보</h3>
+        <hr class="qnahr"style="margin-bottom: 15px;">
+        <ul>
+        <li>Delivery 브랜드 업체발송은 상품별로 브랜드 알림 배송공지 기준으로 출고되고 브랜드마다 개별 배송비가 부여됩니다.</li>
+        <li>Delivery 29CM 자체발송은 오후 2시까지 결제확인된 주문은 당일 출고되고 5만원 이상 주문은 무료배송, 5만원 미만은 3,000원의 배송비가 추가됩니다.</li>
+        <li>SPECIAL ORDER, PT 등 예약주문은 상세설명의 출고일정을 확인하시기 바랍니다.</li>
+        <li>구두, 액세서리, 침구, 액자, 가구 등 상품설명의 제작기간을 숙지해주시기 바랍니다.</li>
+        <li>가구 및 일부 상품, 제주도를 포함한 도서산간 지역은 추가배송비 입금요청이 있을 수 있습니다.</li>
+        </ul>
+    </div>
+
+    <!-- 교환, 환불, A/S 안내 섹션 -->
+    <div class="exchange-info"style="width: 1000px;margin:0 auto;">
+        <h3>교환, 환불, A/S 안내</h3>
+        <hr class="qnahr"style="margin-bottom: 15px;">
+        <ul>
+        <li>상품 수령일로부터 7일 이내 반품 / 환불 가능합니다.</li>
+        <li>변심 반품의 경우 왕복배송비를 차감한 금액이 환불되며, 제품 및 포장 상태가 재판매 가능해야 합니다.</li>
+        <li>동일상품 또는 동일상품 내 추가금액이 없는 옵션만 교환 가능합니다.</li>
+        <li>상품 불량의 경우는 배송비를 포함한 전액이 환불됩니다.</li>
+        <li>출고 이후 환불요청 시 상품 회수 후 처리됩니다.</li>
+        <li>열린 등 주문제작상품, 카메라 / 밀봉포장상품 등은 변심에 따른 반품 / 환불이 불가합니다.</li>
+        <li>일부 브랜드의 경우 A/S 기준이 우선 적용됩니다.</li>
+        <li>구매자가 미성년자인 경우 법정대리인의 동의가 필요합니다.</li>
+        </ul>
+    </div>
+
+</div>
+
+<style>
+    /* 상품 정보 맨 위 검정색 줄 */
+.product-header-line {
+    width: 100%; /* 전체 너비 */
+    height: 1px; /* 검정색 줄 두께 */
+    background-color: #000; /* 검정색 */
+    margin-bottom: 20px; /* 아래 여백 */
+}
+
+    .delivery-info, .exchange-info {
+        margin: 30px 0;
+        padding: 20px;
+    }
+    
+    .delivery-info h3, .exchange-info h3 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    
+    .delivery-info ul, .exchange-info ul {
+        list-style-type: disc;
+        margin-left: 20px;
+    }
+    
+    .delivery-info li, .exchange-info li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #333;
+    }
+    
+    .qnahr {
+        border: none;
+        height: 3px;
+        background-color: #000; /* 진한 검정색 선 */
+    }
+    .product-section {
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .toggle-button {
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 명시 */
+        background-color: white;
+        border: 1px solid #333;
+        color: #333;
+        font-size: 15px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        outline: none;
+        width: 1039.6px;
+        height: 56.6px;
+    }
+    
+    .product-headimage-container {
+        position: relative;
+        overflow: hidden; /* 넘치는 부분 숨김 */
+        height: 2900px; /* 초기 이미지 높이 제한 */
+        transition: height 0.5s ease; /* 부드러운 애니메이션 */
+    }
+    
+    /* 이미지 */
+    .product-headimage {
+        transition: height 0.5s ease;
+    }
+    
+    .product-head-himage {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    /* 흐림 효과 레이어 */
+    .image-fade {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 250px; /* 흐려지는 영역 높이 */
+        background: linear-gradient(
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 1)
+        );
+        pointer-events: none; /* 클릭 이벤트 방지 */
+        transition: opacity 0.5s ease; /* 효과 사라질 때 부드럽게 전환 */
+    }
+    
+    /* 펼쳐진 상태 */
+    .product-headimage-container.expanded {
+        height: auto; /* 높이를 제한하지 않음 */
+    }
+    
+    .product-headimage-container.expanded .image-fade {
+        opacity: 0; /* 흐려지는 효과 제거 */
+        pointer-events: none;
+    }
+    
+    .product-number {
+        color: #333;
+        margin-top: 10px;
+    }
+    .product-info {
+        font-size: 1rem;
+        color: #333;
+        font-weight: bold;
+        margin-top: 30px;
+    }
+    .product-id {
+        font-size: 0.9rem; /* 더 작은 폰트 크기 */
+        color: #333;
+        font-weight: normal; /* 볼드체 해제 */
+        border-bottom: 1px solid #e0e0e0; /* 회색 선 추가 */
+        padding-bottom: 15px; /* 텍스트와 선 사이 여백 */
+    }
+    .product-headimage {
+        margin: 0 auto; /* 가로 중앙 정렬 */
+    }
+    .product-page-container {
+        display: flex;
+        flex-direction: column; /* 세로 정렬 */
+        gap: 30px; /* 상단 정보와 QnA 섹션 간 간격 */
+    }
+    .product-qna {
+        margin: 0 auto; /* 가로 중앙 정렬 */
+        text-align: left; /* 텍스트 왼쪽 정렬 */
+    }
+    .product-detail-container {
+        display: flex;
+        gap: 20px; /* 왼쪽과 오른쪽 사이 간격 */
+        align-items: flex-start; /* 세로 정렬 */
+    }
+    
+    .product-image {
+        flex: 1; /* 왼쪽 영역이 전체 너비의 일정 비율 차지 */
+        max-width: 50%; /* 최대 너비 제한 */
+    }
+    
+    .product-head-image {
+        width: 500px; /* 이미지가 영역을 꽉 채우도록 */
+        height: auto; /* 이미지 비율 유지 */
+        object-fit: cover; /* 이미지 잘림 방지 */
+    }
+    
+    .product-info {
+        flex: 1; /* 오른쪽 영역이 전체 너비의 일정 비율 차지 */
+        display: flex;
+        flex-direction: column; /* 세로 배치 */
+        gap: 15px; /* 요소 간 간격 */
+    }
+    
+    .like-section {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* 버튼과 좋아요 수 사이 간격 */
+    }
+    
+    .cart-section {
+        margin-top: 15px;
+    }
+    
+    .out-of-stock {
+        color: red;
+        font-weight: bold;
+    }
+    .product-header {
+        display: flex; /* 가로로 배치 */
+        align-items: center; /* 수직 정렬 */
+        gap: 10px; /* 상품명과 버튼 사이 간격 */
+    }
+    
+    .product-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin: 0; /* 기본 마진 제거 */
+    }
+    
+    .like-section {
+        display: flex; /* 버튼과 좋아요 수를 같은 줄에 배치 */
+        align-items: center;
+        gap: 5px; /* 버튼과 좋아요 수 사이 간격 */
+    }
+    
+    .like-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem; /* 버튼 크기 조정 */
+        padding: 0;
+    }
+    
+    .like-count {
+        font-size: 1rem;
+        color: #555;
+    }
+    
+</style>    
+    {% endblock content %}

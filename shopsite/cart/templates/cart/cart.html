@@ -1,0 +1,282 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% block content %}
+    {% if not cart_items %}
+        <div>
+            <div class="text-center">
+                <br>
+                <h1 class="text-center my_title">
+                    Your shopping cart is empty
+                </h1>
+                <br>
+            </div>
+        </div>
+    {% else %}
+        <div>
+            <div class="text_center">
+                <h1 class="text-center my_title">
+                    SHOPPING BAG
+                </h1>
+            </div>
+        </div>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+        <div class="row mx-auto">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <hr class="qnahr1">
+                <div class="cart-container">
+                    <div class="cart-header">
+                        <div class="cart-checkbox">
+                            <input type="checkbox" id="selectAll" onchange="selectAllItems(this)" style="width: 25px;height: 25px;">
+                        </div>
+                        <div class="cart-product-info">상품 정보</div>
+                        <div class="cart-quantity">수량</div>
+                        <div class="cart-price">주문 금액</div>
+                    </div>
+                    <div class="cart-items">
+                        {% for cart_item in cart_items %}
+                        <div class="cart-item">
+                            <div class="cart-checkbox">
+                                <input type="checkbox" name="selected_items" value="{{ item.id }}" class="item-checkbox" data-id="{{ cart_item.id }}" onchange="updateTotalItems();calculateTotal()" style="width: 25px;height: 25px;">
+                            </div>
+                            <div class="cart-product-info">
+                                <img src="{{ cart_item.product.head_image.url }}" alt="Product" class="cart-product-image">
+                                <div>
+                                    <button class="delete-btn" onclick="deleteCartItem('{{ cart_item.id }}')">X</button>
+                                    <span style="font-size: 13px;text-decoration: underline;font-weight:600;">{{cart_item.product.host.username}}</span><br>
+                                    <strong>{{ cart_item.product.name }}</strong><br>
+                                    <span style="font-size: 13px;">{{ cart_item.product.price }}원</span><br>
+                                    <span style="font-size: 13px;color:rgb(48, 48, 51);">옵션: {{ cart_item.size.name }}</span><br>
+                                    <div class="cart-delete">
+                                        <button class="delete-btn" onclick="deleteCartItem('{{ cart_item.id }}')">X</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cart-quantity">
+                                <button class="quantity-btn" onclick="updateCartItem('{{ cart_item.id }}', -1)">-</button>
+                                <span id="quantity-{{ cart_item.id }}">{{ cart_item.quantity }}</span>
+                                <button class="quantity-btn" onclick="updateCartItem('{{ cart_item.id }}', 1)">+</button>
+                            </div>
+                            <div class="cart-price">
+                                <span id="price-{{ cart_item.id }}" data-unit-price="{{ cart_item.product.price }}">
+                                    {{ cart_item.sub_total }}원
+                                </span>
+                            </div>
+                            
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="cart-actions">
+                <form method="POST" action="{% url 'cart:delete_selected_items' %}" id="delete-selected-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary">선택상품 삭제</button>
+                </form>
+                <button class="btn btn-outline-secondary" onclick="deleteSoldOutItems()">품절상품 삭제</button>
+                <span class="cart-info-text">
+                    장바구니는 최대 100개의 상품을 담을 수 있습니다.
+                </span>
+            </div>
+            <hr class="qnahr1" style="margin-top: 50px;">
+                <div class="total-summary-container">
+                    <div class="summary-header">
+                        <strong>총 주문금액</strong>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-price">
+                            <span class="price-amount" id="total-price">0</span>
+                        </div>
+                        <div class="summary-count">
+                            총 <span id="total-items">개</span>
+                        </div>
+                    </div>
+                    <hr class="qnahr1" style="margin-top: 40px;height:1px">
+                </div>
+
+                <div class="button-container">
+                    {% csrf_token %}
+                    <a href="{% url 'shop:search' %}" class="btn btn-white continue-shopping-btn" style="width: 300px;">CONTINUE SHOPPING</a>
+                    <button class="btn btn-black checkout-btn" style="width: 340px;height: 60px;">CHECK OUT</button>
+                    
+                </div>
+                
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+            // 폼에 선택된 체크박스 값을 추가하는 함수
+            function submitSelectedItems() {
+                const form = document.getElementById("delete-selected-form");
+                const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+                
+                // 기존의 숨겨진 input들을 제거
+                form.querySelectorAll('input[name="selected_items"]').forEach(input => input.remove());
+
+                // 선택된 체크박스의 값을 폼에 추가
+                checkboxes.forEach(checkbox => {
+                    const hiddenInput = document.createElement("input");
+                    hiddenInput.type = "hidden";
+                    hiddenInput.name = "selected_items";
+                    hiddenInput.value = checkbox.getAttribute("data-id");
+                    form.appendChild(hiddenInput);
+                });
+
+                form.submit(); // 폼 제출
+            }
+
+            // 선택상품 삭제 버튼 클릭 시 실행
+            document.querySelector(".btn-outline-secondary").addEventListener("click", (e) => {
+                e.preventDefault();
+                submitSelectedItems();
+            });
+                    document.addEventListener('DOMContentLoaded', () => {
+                        // 체크박스 모두 기본적으로 체크되도록 설정
+                        document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+                            checkbox.checked = true; // 체크 상태 설정
+                        });
+                    
+                        // 체크된 항목 개수 업데이트
+                        updateTotalItems();
+                    });
+            
+            // 총 개수 업데이트 함수
+            function updateTotalItems() {
+                const checkedItems = document.querySelectorAll('.item-checkbox:checked').length; // 체크된 항목만 선택
+                document.getElementById('total-items').innerText = `${checkedItems}개`;
+            }
+            
+            
+            function deleteCartItem(cartItemId) {
+                if (!confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+                    return; // 사용자가 취소하면 삭제 중단
+                }
+            
+                fetch(`/cart/delete_item/${cartItemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                        // 성공 시 해당 행 제거
+                        const row = document.querySelector(`[data-id="${cartItemId}"]`).closest('tr');
+                        row.remove();
+                        calculateTotal(); // 총 결제 금액 다시 계산
+                    } else {
+                        alert("상품 삭제에 실패했습니다.");
+                    }
+                })
+                .catch(error => console.error("Error deleting item:", error));
+            }
+            
+            function updateCartItem(cartItemId, change) {
+                const currentQuantityElement = document.getElementById(`quantity-${cartItemId}`);
+                let currentQuantity = parseInt(currentQuantityElement.innerText);
+            
+                // 수량이 1 이상이어야 하므로 확인
+                const newQuantity = currentQuantity + change;
+                if (newQuantity < 1) {
+                    alert("수량은 최소 1개 이상이어야 합니다.");
+                    return;
+                }
+            
+                fetch("{% url 'cart:update_quantity' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        cart_item_id: cartItemId,
+                        quantity: newQuantity
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // 성공적으로 업데이트되었을 경우 UI 업데이트
+                        currentQuantityElement.innerText = data.quantity;
+                        const priceElement = document.getElementById(`price-${cartItemId}`);
+                        priceElement.innerText = `${data.sub_total}원`;
+            
+                        calculateTotal(); // 총 금액 다시 계산
+                    } else {
+                        alert("수량 업데이트 실패: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating cart item:", error);
+                    alert("서버와 통신 중 문제가 발생했습니다.");
+                });
+            }
+            
+            
+            
+            function calculateTotal() {
+                let total = 0;
+            
+                // 체크된 항목만 총 금액에 반영
+                document.querySelectorAll('.item-checkbox:checked').forEach(item => {
+                    const cartItemId = item.dataset.id;
+                    const priceElement = document.getElementById(`price-${cartItemId}`);
+                    total += parseInt(priceElement.innerText.replace('원', '')) || 0; // 금액 합산
+                });
+            
+                // 총 결제 금액 업데이트
+                document.getElementById('total-price').innerText = `${total}원`;
+            }
+            
+            // 전체 선택
+            function selectAllItems(selectAllCheckbox) {
+                const checkboxes = document.querySelectorAll('.item-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+                calculateTotal(); // 체크 상태에 따른 총 금액 계산
+            }
+            
+            // 페이지 로드 시 체크박스 모두 선택된 상태로 설정하고 총 결제 금액 초기화
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+                    checkbox.checked = true; // 체크박스 초기화
+                });
+                calculateTotal(); // 초기 총 금액 계산
+            });
+            
+
+// 결제하기 버튼
+function requestPay() {
+    const selectedItems = [];
+    document.querySelectorAll('.item-checkbox:checked').forEach(item => {
+        selectedItems.push(item.dataset.id);
+    });
+
+    if (selectedItems.length === 0) {
+        alert("선택된 상품이 없습니다.");
+        return;
+    }
+
+    fetch('/cart/checkout/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: selectedItems })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("결제가 완료되었습니다!");
+        window.location.href = '/order/complete/';
+    })
+    .catch(error => console.error("Error:", error));
+}
+</script>        
+            
+    {% endif %}
+
+{% endblock %}

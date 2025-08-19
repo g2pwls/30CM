@@ -1,0 +1,34 @@
+{% extends "shop/base.html" %}
+    {% block page_title %}
+        Login
+    {% endblock page_title %}
+    {% block search-bar %}
+    {% endblock search-bar %}
+    {% block content %}
+    
+        {% load socialaccount %}
+    {% providers_media_js %}
+    <div class="fwel" style="margin-top: 100px;">
+    <div class="welcomediv">
+        <span class="welcss"> 30CM에 </span>
+        <span class="welcss"> 오신 것을 환영해요! </span>
+        <div class="weldiv">
+            <span class="coocss"> 29CM가 처음이라면, 15% 할인 꼭 받으세요 </span>
+        </div>
+    </div>
+    </div>
+    <div class="button-momo">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/log.css' %}">
+
+    <button class="button naver-button" onclick="location.href='{% provider_login_url 'naver' %}'">
+        <img src="{% static 'images/naver-logo.png' %}" alt="네이버 로고" class="naver-button-icon">네이버로 계속하기</button>
+    <button class="button kakao-button" onclick="location.href='{% provider_login_url 'kakao' %}'">
+        <img src="{% static 'images/kakao-logo.png' %}" alt="카카오 로고" class="kakao-button-icon">카카오로 계속하기</button>
+    <button class="button google-button" onclick="location.href='{% provider_login_url 'google' %}'">
+        <img src="{% static 'images/google-logo.png' %}" alt="구글 로고" class="google-button-icon">구글로 계속하기</button>
+    <button class="button email-button" onclick="location.href='/users/login/email'">
+        <img src="{% static 'images/email-logo.png' %}" alt="이메일 로고" class="email-button-icon"> 이메일로 계속하기</button>
+        
+    </div>
+    {% endblock content %}

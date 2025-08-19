@@ -1,0 +1,180 @@
+{% extends "shop/base.html" %}
+
+{% block page_title %}
+    Search
+{% endblock page_title %}
+
+{% block search-bar %}
+{% endblock search-bar %}
+
+{% block content %}
+    <h2>필터</h2>
+    <form method="get" action="{% url 'shop:search' %}" class="horizontal-form">
+        <div>
+            <label for="name">Product name</label>
+            <input value="{{ name }}" id="name" name="name" placeholder="Search by Name" type="text">
+        </div>
+    
+        <div>
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="0" {% if s_category == 0 %}selected{% endif %}>Any Kind</option>
+                {% for category in categories %}
+                    <option value="{{ category.pk }}" {% if s_category == category.pk %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div>
+            <label for="color">Color</label>
+            <select id="color" name="ColorCategory">
+                <option value="0">Any Color</option>
+                {% for color in ColorCategories %}
+                    <option value="{{ color.pk }}" {% if color.pk in s_ColorCategories %}selected{% endif %}>
+                        {{ color.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div>
+            <label for="price">Max Price</label>
+            <input value="{{ price }}" id="price" name="price" type="number" placeholder="Max Price">
+        </div>
+    
+        <div>
+            <label for="host">Host</label>
+            <select id="host" name="hosts">
+                <option value="">Any Host</option>
+                {% for host in hosts %}
+                    <option value="{{ host.pk }}" {% if host.pk in s_hosts %}selected{% endif %}>
+                        {{ host.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <button type="submit">Search</button>
+    </form>
+    <style>
+    .horizontal-form {
+        display: flex;
+        flex-wrap: wrap; /* 화면 크기에 따라 자동으로 줄바꿈 */
+        gap: 10px; /* 각 항목 사이의 간격 */
+        align-items: center; /* 레이블과 입력 필드 정렬 */
+    }
+    
+    .horizontal-form div {
+        display: flex;
+        margin-right: 15px; /* 오른쪽 간격 */
+    }
+    
+    .horizontal-form button {
+        align-self: flex-start; /* 버튼을 왼쪽에 정렬 */
+    }
+</style>
+
+    <h3>Results</h3>
+
+    {% if products %}
+    <div class="card-container">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/card.css' %}">
+        {% for product in products %}
+        <div class="card" data-url="{% url 'shop:product_detail' product.id %}" onclick="goToDetailPage(event, this)">
+            <div class="card-image-container" style="position: relative;">
+                <img src="{{ product.head_image.url }}" alt="{{ product.name }}" class="card-image" style="width: 267px; height: 267px;">
+                <button class="heart-button" data-product-id="{{ product.id }}" data-liked="{{ product.user_has_liked|yesno:'true,false' }}" onclick="toggleHeart(event, this)">
+                    <img 
+                        src="{% if product.user_has_liked %}{% static 'images/fullheart.png' %}{% else %}{% static 'images/emptyheart.png' %}{% endif %}" 
+                        data-empty-src="{% static 'images/emptyheart.png' %}" 
+                        data-filled-src="{% static 'images/fullheart.png' %}" 
+                        alt="Heart Icon" 
+                        class="heart-icon">
+                </button>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'users:user_profile' product.host.username %}" class="card-host">{{ product.host.username }} ></a>
+                {% if product.host.superhost %}
+                (superhost)
+                {% endif %}
+                <p class="card-title">{{ product.name }}</p>
+                <p class="card-price">₩{{ product.price }}</p>
+
+                <div class="heartdiv">
+                    <img src="{% static 'images/countheart.png' %}" alt="하트" class="heart-button-icon" style="width: 15px;">
+                    <span id="like-count-{{ product.id }}" class="likecount">{{ product.like_count }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if products.has_previous %}
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ products.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}.
+            </span>
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}">Next</a>
+                <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    {% else %}
+    <p>No products found matching your criteria.</p>
+    {% endif %}
+
+    <script>
+        function goToDetailPage(event, cardElement) {
+            // Prevent navigating to detail if heart button is clicked
+            if (!event.target.closest('.heart-button')) {
+                const url = cardElement.getAttribute('data-url');
+                window.location.href = url;
+            }
+        }
+
+        function toggleHeart(event, button) {
+            event.stopPropagation();
+
+            const productId = button.getAttribute('data-product-id');
+            const heartIcon = button.querySelector('.heart-icon');
+            const likeCountElement = document.getElementById(`like-count-${productId}`);
+
+            fetch(`/shop/product/${productId}/toggle_like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.liked) {
+                    heartIcon.src = heartIcon.getAttribute('data-filled-src');
+                    button.setAttribute('data-liked', 'true');
+                } else {
+                    heartIcon.src = heartIcon.getAttribute('data-empty-src');
+                    button.setAttribute('data-liked', 'false');
+                }
+                likeCountElement.textContent = data.like_count;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('좋아요 상태를 변경하는 중 문제가 발생했습니다.');
+            });
+        }
+    </script>
+{% endblock content %}
+

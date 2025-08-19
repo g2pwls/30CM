@@ -1,0 +1,468 @@
+/* Pretendard Font Import */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css");
+
+/* 버튼 스타일 */
+button {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 적용 */
+}
+
+div {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 적용 */
+}
+
+span {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 적용 */
+}
+input {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 적용 */
+}
+
+.spanname{
+    white-space: nowrap;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.welcss{
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-align: center;
+    align-items: center;
+}
+
+.weldiv{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-align: center;
+    align-items: center;
+}
+.coocss{
+    font-size: 14px;
+}
+
+/* 버튼 컨테이너를 중앙에 배치 */
+.button-momo {
+    display: flex; /* Flexbox 레이아웃 사용 */
+    flex-direction: column; /* 버튼들을 세로로 배치 */
+    align-items: center; /* 수평 방향으로 가운데 정렬 */
+    justify-content: center; /* 수직 방향으로 가운데 정렬 */
+    gap: 8px;
+    padding-top: 80px;
+}
+
+.naver-button {
+    width: 400px; 
+    height: 52px; 
+    font-size: 15px; 
+    font-weight: bold;
+    border: none; 
+    border-radius: 5px; 
+    background-color: #03c75a; 
+    color: #fff; 
+    cursor: pointer;
+}
+
+.naver-button-icon {
+    width: 23px; /* 이미지 너비 */
+    height: 25px; /* 이미지 높이 */
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+.kakao-button{
+    width: 400px; 
+    height: 52px; 
+    font-size: 15px;
+    font-weight: bold; 
+    border: none; 
+    border-radius: 5px; 
+    background-color: #fee500; 
+    color: #000000; 
+    cursor: pointer;
+}
+
+.kakao-button-icon {
+    width: 21px; /* 이미지 너비 */
+    height: 19px; /* 이미지 높이 */
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 2px;
+    margin-right: 3px;
+}
+
+.google-button{
+    width: 400px; 
+    height: 52px; 
+    font-size: 15px; 
+    font-weight: bold;
+    border: 1px solid black; 
+    border-radius: 5px; 
+    background-color: #fff; 
+    color: #000000;
+    cursor: pointer;
+}
+
+.google-button-icon {
+    width: 18px; /* 이미지 너비 */
+    height: 19px; /* 이미지 높이 */
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 2px;
+    margin-right: 4px;
+}
+
+.email-button{
+    width: 400px; 
+    height: 52px; 
+    font-size: 15px; 
+    font-weight: bold;
+    border: 1px solid black; 
+    border-radius: 5px; 
+    background-color: #fff; 
+    color: #000000;
+    cursor: pointer;
+}
+
+.email-button-icon {
+    width: 20px; /* 이미지 너비 */
+    height: 21px; /* 이미지 높이 */
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 2px;
+}
+
+.bigdiv{
+    margin-left: 400px;
+    margin-right: 400px;
+    padding-top: 43px;
+    padding-bottom: 50px;
+    width:400px;
+    height: 554px;
+}
+
+.logdiv{
+    padding-top:60px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-top: 5px;
+    margin-bottom: 15px; /* 필드 간 간격 */
+    box-sizing: border-box;
+}
+
+.emailform-control{
+    height: 50px;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.submit-button{
+    height: 50px;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-top: 100px;
+    background-color: #000000;
+    border: 1px solid #ccc;
+    color:#fff;
+    font-weight: bold;
+}
+
+.small-label {
+    font-size: 14px;
+}
+
+.signup-button{
+    height: 50px;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color:#000000;
+    font-weight: bold;
+}
+
+.sighemail {
+    margin-top: 20px;
+}
+
+.agree {
+    margin: 20px 0;
+}
+
+.divider {
+    height: 1px; /* 구분선 두께 */
+    background-color: #e0e0e0; /* 구분선 색상 */
+    margin: 20px 0; /* 위아래 여백 */
+    width: 100%; /* 구분선 너비 */
+}
+
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: normal;
+    color: #000;
+}
+
+.agree-checkbox {
+    display: none; /* 기본 체크박스 숨김 */
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.checkbox-custom:after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: #000; /* 체크 표시 색상 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); /* 기본적으로 체크 표시 숨김 */
+    transition: transform 0.2s ease-in-out;
+    border-radius: 2px;
+}
+
+.agree-checkbox:checked + .checkbox-custom:after {
+    transform: translate(-50%, -50%) scale(1); /* 체크박스 체크 시 표시 */
+}
+
+.agree-description {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #888;
+    line-height: 1.5;
+}
+
+.terms-container {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    margin-top: 20px;
+}
+
+.term-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    line-height: 18px;
+}
+
+.term-item label {
+    display: flex; /* Flexbox 사용 */
+    align-items: center; /* 수직 가운데 정렬 */
+    gap: 8px; /* 체크박스와 글자 간격 조정 */
+}
+
+.checkbox-input {
+    display: none; /* 기본 체크박스를 숨김 */
+}
+
+.checkbox-custom {
+    width: 17px;
+    height: 17px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.checkbox-custom:after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: #000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); /* 체크 표시 숨김 */
+    transition: transform 0.2s ease-in-out;
+    border-radius: 2px;
+}
+
+.checkbox-input:checked + .checkbox-custom:after {
+    transform: translate(-50%, -50%) scale(1); /* 체크 표시 보이기 */
+}
+
+.detail-link {
+    margin-left: auto; /* 텍스트와 오른쪽 정렬 */
+    font-size: 14px;
+    color: #888;
+    text-decoration: none;
+}
+
+.detail-link:hover {
+    text-decoration: underline; /* 호버 시 밑줄 추가 */
+}
+
+.privacy-policy {
+    font-size: 12px;
+    color: #666;
+    margin-top: 50px;
+    line-height: 1.5;
+}
+
+.privacy-policy a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.privacy-policy a:hover {
+    text-decoration: underline;
+}
+
+.next-button {
+    height: 50px;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color:#000000;
+    font-weight: bold;
+}
+
+.next-button:hover {
+    background-color: #000000;
+    color: #fff
+}
+
+.next-button:disabled {
+    background-color: #f5f5f5; /* 비활성화 상태의 배경색 */
+    color: #999; /* 텍스트 색상 */
+    border: 1px solid #fff;
+    cursor: not-allowed; /* 커서 스타일 */
+}
+
+.emailvar{
+    height: 28px;
+    width: 368px;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color:#000000;
+    font-weight: bold;
+}
+
+.signup-form {
+    margin-top: 20px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.small-label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input.password-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.input-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.form-control1 {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-top: 5px;
+    margin-bottom: 15px; /* 필드 간 간격 */
+    box-sizing: border-box;
+}
+
+.phone-input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.phone-input {
+    width: 60px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.dash {
+    font-size: 16px;
+    color: #999;
+}

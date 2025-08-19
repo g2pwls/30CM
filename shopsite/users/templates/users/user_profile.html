@@ -1,0 +1,168 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+<h1>{{ user.username }}님의 페이지</h1>
+
+{% if user.superhost %}
+    <p>이 사용자는 Superhost입니다.</p>
+{% endif %}
+
+<!-- 필터링 폼 -->
+<form method="get" action="{% url 'users:user_profile' user.username %}">
+    <!-- 카테고리 필터링 -->
+    <label for="category">카테고리:</label>
+    <select id="category" name="category">
+        <option value="">모든 카테고리</option>
+        {% for category in categories %}
+            <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- 색상 필터링 -->
+    <label for="color">색상:</label>
+    <select id="color" name="color">
+        <option value="">모든 색상</option>
+        {% for color in colors %}
+            <option value="{{ color.slug }}" {% if selected_color == color.slug %}selected{% endif %}>
+                {{ color.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- 가격 범위 필터링 -->
+    <label for="price_lower">최소 가격:</label>
+    <input type="number" id="price_lower" name="PriceLower" value="{{ price_lower_range }}" placeholder="최소 가격">
+
+    <label for="price_upper">최대 가격:</label>
+    <input type="number" id="price_upper" name="PriceUpper" value="{{ price_upper_range }}" placeholder="최대 가격">
+
+    <!-- 서브카테고리와 하위 카테고리 선택 옵션을 유지하기 위해 히든 필드 추가 -->
+    {% if selected_subcategory %}
+        <input type="hidden" name="subcategory" value="{{ selected_subcategory }}">
+    {% endif %}
+    {% if selected_nested_subcategory %}
+        <input type="hidden" name="nested_subcategory" value="{{ selected_nested_subcategory }}">
+    {% endif %}
+
+    <!-- 필터링 버튼 -->
+    <button type="submit">필터 적용</button>
+</form>
+
+<!-- 필터링된 제품 목록 (카드 레이아웃) -->
+{% if products %}
+<div class="card-container">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/card.css' %}">
+    {% for product in products %}
+    <div class="card" data-url="{% url 'shop:product_detail' product.id %}" onclick="goToDetailPage(event, this)">
+        <div class="card-image-container" style="position: relative;">
+            <img src="{{ product.head_image.url }}" alt="{{ product.name }}" class="card-image" style="width: 267px; height: 267px;">
+            <button class="heart-button" data-product-id="{{ product.id }}" data-liked="{{ product.user_has_liked|yesno:'true,false' }}" onclick="toggleHeart(event, this)">
+                <img 
+                    src="{% if product.user_has_liked %}{% static 'images/fullheart.png' %}{% else %}{% static 'images/emptyheart.png' %}{% endif %}" 
+                    data-empty-src="{% static 'images/emptyheart.png' %}" 
+                    data-filled-src="{% static 'images/fullheart.png' %}" 
+                    alt="Heart Icon" 
+                    class="heart-icon">
+            </button>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'users:user_profile' product.host.username %}" class="card-host">{{ product.host.username }} ></a>
+            {% if product.host.superhost %}
+            (superhost)
+            {% endif %}
+            <p class="card-title">{{ product.name }}</p>
+            <p class="card-price">₩{{ product.price }}</p>
+
+            <div class="heartdiv">
+                <img src="{% static 'images/countheart.png' %}" alt="하트" class="heart-button-icon" style="width: 15px;">
+                <span id="like-count-{{ product.id }}" class="likecount">{{ product.like_count }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<p>조건에 맞는 제품이 없습니다.</p>
+{% endif %}
+
+<hr>
+
+<!-- 카테고리별 필터링 옵션 -->
+<h3>카테고리 필터링</h3>
+<ul>
+    {% for category in categories %}
+        <li>
+            <a href="{% url 'users:user_profile' user.username %}?category={{ category.slug }}">
+                {{ category.name }}
+            </a>
+            {% if category.subcategories.exists %}
+                <ul>
+                    {% for subcategory in category.subcategories.all %}
+                        <li>
+                            <a href="{% url 'users:user_profile' user.username %}?category={{ category.slug }}&subcategory={{ subcategory.slug }}">
+                                {{ subcategory.name }}
+                            </a>
+                            {% if subcategory.nested_subcategories.exists %}
+                                <ul>
+                                    {% for nested_subcategory in subcategory.nested_subcategories.all %}
+                                        <li>
+                                            <a href="{% url 'users:user_profile' user.username %}?category={{ category.slug }}&subcategory={{ subcategory.slug }}&nested_subcategory={{ nested_subcategory.slug }}">
+                                                {{ nested_subcategory.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+<script>
+    function goToDetailPage(event, cardElement) {
+        if (!event.target.closest('.heart-button')) {
+            const url = cardElement.getAttribute('data-url');
+            window.location.href = url;
+        }
+    }
+
+    function toggleHeart(event, button) {
+        event.stopPropagation();
+
+        const productId = button.getAttribute('data-product-id');
+        const heartIcon = button.querySelector('.heart-icon');
+        const likeCountElement = document.getElementById(`like-count-${productId}`);
+
+        fetch(`/shop/product/${productId}/toggle_like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.liked) {
+                heartIcon.src = heartIcon.getAttribute('data-filled-src');
+                button.setAttribute('data-liked', 'true');
+            } else {
+                heartIcon.src = heartIcon.getAttribute('data-empty-src');
+                button.setAttribute('data-liked', 'false');
+            }
+            likeCountElement.textContent = data.like_count;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('좋아요 상태를 변경하는 중 문제가 발생했습니다.');
+        });
+    }
+</script>
+
+{% endblock content %}

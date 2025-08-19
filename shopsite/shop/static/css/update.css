@@ -1,0 +1,116 @@
+.form-group input[type="text"]{
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* 폰트 설정 */
+    font-size: 14px;
+    }
+
+
+/* 폼 컨테이너 */
+form {
+    max-width: 500px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+        
+/* 제목 스타일 */
+form h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+        
+        /* 폼 그룹 간격 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        /* 라벨 스타일 */
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        /* 입력 필드 스타일 */
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #fff;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-group textarea{
+            row: 1;
+        }
+        
+        /* 입력 필드 포커스 효과 */
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+        
+        /* 버튼 스타일 */
+        form-submit-btn, input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        form-submit-btn:hover, input[type="submit"]:hover {
+            background-color: #f4f4f4;
+            color: #000000
+        }
+        
+        /* 참고 텍스트 스타일 */
+        .form-group input[placeholder] {
+            color: #aaa;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            form {
+                padding: 15px;
+            }
+            form h1 {
+                font-size: 20px;
+            }
+            button, input[type="submit"] {
+                font-size: 14px;
+            }
+        }
+            /* 우편번호 찾기 버튼 스타일 */
+            .btn-postcode {
+                padding: 3px 7px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-left: 10px; /* 입력 필드와 버튼 간 간격 */
+                white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+                transition: background-color 0.3s ease;
+            }
+            
+            .btn-postcode:hover {
+                background-color: #0056b3;
+            }

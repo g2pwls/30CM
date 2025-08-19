@@ -1,0 +1,31 @@
+<div class="qnainedit" style="background-color:rgb(244, 244, 244);">
+<div class="editarea" style="margin-left: 100px;margin-right: 100px;">
+<form action="{% url 'qna:edit' qna.pk %}" method="POST" onsubmit="submitEditForm(event, {{ qna.pk }})" style="display: flex; flex-direction: column; gap: 10px;">
+    {% csrf_token %}
+    <div style="display: flex; align-items: center; gap: 10px;margin-top: 50px;">
+    <label for="qnacate"style="min-width: 100px;">문의내용</label>
+    <select id="qnacate" name="Qnacategory"style="border:1px solid rgb(212, 212, 212);width: 201.6px;height: 39.6px;">
+        {% for qnacate in QnaCategories %}
+        <option value="{{ qnacate.pk }}" {% if qnacate.pk == qna.category.pk %}selected{% endif %}>
+            {{ qnacate.qna_name }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+<div style="display: flex; align-items: center; gap: 10px;font-size: 13px;">
+    <label style="display: flex; align-items: center; gap: 5px; font-size: 14px; color: rgb(100, 100, 100);margin-left: 110px;">
+        <input type="checkbox" name="is_private" style="width: 20px;height: 20px;border:1px solid rgb(212, 212, 212);"{% if qna.is_private %}checked{% endif %}> 비밀글로 설정
+    </label>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+    <label for="title"style="min-width: 100px;">제목</label>
+    <input id="title" type="text" name="title" value="{{ qna.title }}"style="border:1px solid rgb(212, 212, 212);width: 300px;height: 38px;">
+    </div>
+    <div style="display: flex; gap: 10px;">
+    <label for="content"style="min-width: 100px;">내용</label>
+    <textarea name="content" id="content" cols="90" rows="10" style="font-size:15px;border:1px solid rgb(212, 212, 212);font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;">{{ qna.content }}</textarea>
+    </div>
+    <input type="submit" value="수정" style="margin-bottom: 50px;width: 95.2px;height: 41.2px;color:#ffffff;background-color:#000000;border:1px solid #333;margin-left: 685px;">
+</form>
+</div>
+</div>

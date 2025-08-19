@@ -1,0 +1,149 @@
+{% block body %}
+
+<ul>
+    <li>{{ qna.content }}</li>
+</ul>
+
+<div class="qnadap">
+<a href="javascript:void(0);" onclick="loadEditForm({{ qna.pk }})">수정</a>
+<a href="javascript:void(0);" onclick="deleteQna({{ qna.pk }})">삭제</a>
+<a href="javascript:void(0);" onclick="toggleReplyForm({{ qna.pk }})">답변 달기</a>
+</div>
+
+    <style>
+        .qnadap {
+            text-align: right; /* 오른쪽 정렬 */
+        }
+        .qnadap a {
+            text-decoration: none;
+            color: #375FFF;
+            margin-left: 10px; /* 링크 간격 */
+        }
+        </style>
+        
+
+<!-- 답변 입력 폼 (기본 숨김 상태) -->
+<div id="qnareplyform" style="margin-top: 20px;background-color:rgb(244, 244, 244);">
+<div id="reply-form-{{ qna.pk }}" style="display: none; margin-top: 20px;margin-left: 100px;margin-right: 100px;">
+    <form onsubmit="submitReplyForm(event, {{ qna.pk }})">
+        {% csrf_token %}
+        <div style="display: flex; gap: 10px; flex-direction: column;">
+        <label for="reply-content" style="min-width: 100px;margin-top: 50px;">답변 내용</label>
+        <textarea id="reply-content" name="content" cols="90" rows="10" style="font-size:15px;border:1px solid rgb(212, 212, 212);font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;"></textarea>
+        <input type="submit" value="등록" style="margin-bottom: 50px;width: 95.2px;height: 41.2px;color:#ffffff;background-color:#000000;border:1px solid #333;margin-left: 705px;">
+        </div>
+    </form>
+</div>
+</div>
+<!-- 답변이 있을 경우 표시 -->
+{% if qna.reply %}
+    <div id="reply-{{ qna.pk }}" style="margin-top: 10px;">
+        <p style="font-size: 15px; color: rgb(55, 95, 255);">답변.</p>
+        <p style="font-size: 15px;white-space: pre-wrap;">{{ qna.reply.content }}</p>
+
+        <a href="javascript:void(0);" onclick="toggleReplyEditForm({{ qna.pk }})">수정</a>
+        <a href="javascript:void(0);" onclick="deleteReply({{ qna.pk }})">삭제</a>
+
+        <div id="reply-edit-form-{{ qna.pk }}" style="display: none; margin-top: 10px;">
+            <form onsubmit="submitReplyEditForm(event, {{ qna.pk }})">
+                {% csrf_token %}
+                <textarea id="edit-reply-content" name="content" cols="90" rows="10" style="font-size:15px;margin-left: 100px;width: 692px;border:1px solid rgb(212, 212, 212);font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;">{{ qna.reply.content }}</textarea>
+                <input type="submit" value="수정 완료" style="margin-bottom: 50px;width: 95.2px;height: 41.2px;color:#ffffff;background-color:#000000;border:1px solid #333;margin-left: 705px;">
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    
+    // CSRF 토큰 가져오기 함수
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 폼 토글 함수
+    function toggleForm(formId) {
+        const form = document.getElementById(formId);
+        form.style.display = (form.style.display === "none") ? "block" : "none";
+    }
+
+    // 답변 폼 보이기/숨기기
+    function toggleReplyForm(qnaId) {
+        toggleForm(`reply-form-${qnaId}`);
+    }
+
+    // 답변 수정 폼 보이기/숨기기
+    function toggleReplyEditForm(qnaId) {
+        toggleForm(`reply-edit-form-${qnaId}`);
+    }
+
+    // AJAX 요청 함수
+    function sendAjaxRequest(url, method, data, callback) {
+        fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: data
+        })
+        .then(response => response.json())
+        .then(data => callback(data))
+        .catch(error => console.error("AJAX 요청 중 오류:", error));
+    }
+
+    // 답변 폼 제출
+    function submitReplyForm(event, qnaId) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        sendAjaxRequest(`/qna/${qnaId}/reply/`, 'POST', formData, (data) => {
+            if (data.success) {
+                location.reload();  // 답변 등록 후 새로고침
+            } else {
+                alert("답변 등록에 실패했습니다.");
+            }
+        });
+    }
+
+    // 답변 수정 폼 제출
+    function submitReplyEditForm(event, qnaId) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        sendAjaxRequest(`/qna/${qnaId}/reply/edit/`, 'POST', formData, (data) => {
+            if (data.success) {
+                location.reload();  // 수정 후 새로고침
+            } else {
+                alert("답변 수정에 실패했습니다.");
+            }
+        });
+    }
+
+    // 답변 삭제
+    function deleteReply(qnaId) {
+        if (confirm("정말 삭제하시겠습니까?")) {
+            sendAjaxRequest(`/qna/${qnaId}/reply/delete/`, 'POST', null, (data) => {
+                if (data.success) {
+                    document.getElementById(`reply-${qnaId}`).remove();  // 답변 삭제
+                } else {
+                    alert("답변 삭제에 실패했습니다.");
+                }
+            });
+        }
+    }
+</script>
+
+{% endblock %}

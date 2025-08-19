@@ -1,0 +1,125 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css");
+
+div {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; /* Pretendard 폰트 적용 */
+}
+
+/* 카드 컨테이너 */
+.card-container {
+    display: grid; /* 그리드 레이아웃 사용 */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 카드 크기 및 반응형 설정 */
+    gap: 10px; /* 카드 간격 */
+    padding-top: 20px; /* 내부 여백 */
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+    z-index: 0;
+}
+
+/* 개별 카드 */
+.card {
+    background-color: #ffffff; /* 카드 배경색 */
+    border-radius: 0px; /* 둥근 모서리 */
+    overflow: hidden; /* 내부 내용 넘침 방지 */
+    z-index: 0;
+}
+
+
+/* 카드 이미지 */
+.card-image {
+    width: 100%; /* 카드 너비에 맞게 이미지 확장 */
+    height: 200px; /* 고정된 높이 */
+    object-fit: cover; /* 이미지 비율 유지하며 잘라내기 */
+    border-bottom: 1px solid #ddd; /* 이미지 아래 경계선 */
+}
+
+/* 카드 내용 */
+.card-body {
+    padding: 10px; /* 내부 여백 */
+}
+
+.card-host{
+    text-decoration: none; 
+    color:#000000;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* 카드 제목 */
+.card-title {
+    font-size: 13px; /* 제목 폰트 크기 */
+    margin: 10px 0; /* 여백 */
+    color: #333; /* 텍스트 색상 */
+}
+
+/* 카드 가격 */
+.card-price {
+    color: #333; /* 가격 색상 */
+    font-size: 1rem; /* 가격 폰트 크기 */
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+/* 페이지네이션 */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+.card-image-container {
+    position: relative; /* 자식 요소를 절대 위치로 배치하기 위해 필요 */
+    width: 267px; /* 이미지와 동일한 너비 */
+    height: 267px; /* 이미지와 동일한 높이 */
+}
+
+.card-image {
+    display: block; /* 이미지가 부모의 크기를 채우도록 설정 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지를 컨테이너에 맞게 잘라냄 */
+}
+
+.heart-button {
+    position: absolute;
+    bottom: 5px; /* 이미지의 아래쪽에서 10px */
+    right: 28px; /* 이미지의 오른쪽에서 10px */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    height: 36px;
+    width: 26px;
+}
+
+.heart-button .empty-heart {
+    color: #fff; /* 비어있는 하트의 색상 */
+}
+
+.heart-button .filled-heart {
+    color: red; /* 빨간 하트의 색상 */
+}
+
+.heart-icon{
+    width: 22px;
+}
+
+.likecount{
+    color: #949494;
+    width:18px;
+    font-size: 12px;
+}
+
+.heartdiv{
+    display: flex; /* 플렉스박스 사용 */
+    align-items: center; /* 세로 방향으로 가운데 정렬 */
+    width: 45px;
+    height: 12px;
+}

@@ -1,0 +1,484 @@
+{% extends "shop/base.html" %}
+    {% block page_title %}
+        Login
+    {% endblock page_title %}
+    {% block search-bar %}
+    {% endblock search-bar %}
+    {% block content %}
+    <div class="bigdiv">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/log.css' %}">
+        
+        <!-- 첫 번째 화면 -->
+        <div id="first-screen" class="screen">
+            <span class="spanname">
+                30CM 이용 약관에
+                <br>
+                동의해 주세요
+            </span>
+            <div class="sighemail" style="margin-top: 60px;">
+                <div class="agree">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="check-all" class="agree-checkbox">
+                        <span class="checkbox-custom"></span>
+                        전체 동의하기 (선택 정보를 포함합니다.)
+                    </label>
+                    <p class="agree-description" style="margin-left: 30px;">
+                        선택 사항에 대한 동의를 거부하는 경우에도<br>
+                        서비스는 이용이 가능합니다.
+                    </p>
+                </div>
+                <div class="divider"></div>
+                <div class="terms-container">
+                    <div class="term-item">
+                        <label>
+                            <input type="checkbox" class="checkbox-input individual-check">
+                            <span class="checkbox-custom"></span>
+                            [필수] 만 14세 이상입니다
+                        </label>
+                    </div>
+                    <div class="term-item">
+                        <label>
+                            <input type="checkbox" class="checkbox-input individual-check">
+                            <span class="checkbox-custom"></span>
+                            [필수] 이용약관 동의
+                        </label>
+                        <a href="#" class="detail-link">자세히</a>
+                    </div>
+                    <div class="term-item">
+                        <label>
+                            <input type="checkbox" class="checkbox-input individual-check">
+                            <span class="checkbox-custom"></span>
+                            [선택] 마케팅 목적의 개인정보 수집 및 이용 동의
+                        </label>
+                        <a href="#" class="detail-link">자세히</a>
+                    </div>
+                    <div class="term-item">
+                        <label>
+                            <input type="checkbox" class="checkbox-input individual-check">
+                            <span class="checkbox-custom"></span>
+                            [선택] 광고성 정보 수신 동의
+                        </label>
+                        <a href="#" class="detail-link">자세히</a>
+                    </div>
+                </div>
+                <p class="privacy-policy">
+                    정보주체의 개인정보 및 권리 보호를 위해 「개인정보 보호법」 및 관계 법령이 정한 바를 준수하여 안전하게 관리하고 있습니다. 
+                    자세한 사항은 <a href="#">개인정보처리방침</a>에서 확인할 수 있습니다.
+                </p>
+                <button id="next-button" class="next-button" type="button" disabled>다음</button>
+            </div>
+        </div>
+        
+        <!-- 두 번째 화면 -->
+        <div id="second-screen" class="screen" style="display: none;">
+            <span class="spanname">
+                로그인에 사용할
+                <br>
+                아이디를 입력해 주세요.
+            </span>
+            <div class="signup-form" style="margin-top: 60px;">
+                <form method="post" action="{% url 'users:join_email' %}">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="small-label">이메일(아이디)</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="error">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            <button id="submit-button" class="next-button" type="button" disabled style="margin-top:70px">다음</button>
+        </div>
+
+        <div id="third-screen" class="screen" style="display: block;">
+            <span class="spanname">
+                로그인에 사용할<br>
+                비밀번호를 입력해 주세요.
+            </span>
+            <div class="signup-form" style="margin-top: 60px;">
+                <form method="post" action="{% url 'users:signup' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="password" class="small-label">비밀번호</label>
+                        <div class="input-container">
+                            <input type="password" id="password" name="password" class="password-input" placeholder="8자 이상의 비밀번호" required>
+                            <button type="button" class="toggle-password">👁️</button>
+                        </div>
+                        <small class="input-hint">✓ 8-20자 이내 대소문자, 숫자, 특수문자 포함</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="password1" class="small-label">비밀번호 확인</label>
+                        <div class="input-container">
+                            <input type="password" id="password1" name="password1" class="password-input" placeholder="8자 이상의 비밀번호" required>
+                            <button type="button" class="toggle-password">👁️</button>
+                        </div>
+                        <small class="input-hint" id="password-match-hint">✓ 비밀번호 일치</small>
+                    </div>
+                    <button type="submit" class="next-button">다음</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 네 번째 화면 -->
+        <div id="fourth-screen" class="screen" style="display: none;">
+            <span class="spanname">
+                이름과 전화번호, 생일을 입력해 주세요.
+            </span>
+            <div class="signup-form" style="margin-top: 60px;">
+                <form method="post" action="{% url 'users:signup_complete' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                            <label for="name" class="small-label">이름</label>
+                            <input type="text" id="name" name="name" class="form-control1" placeholder="이름 입력" maxlength="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tel" class="small-label">전화번호</label>
+                        <input type="tel" id="tel" name="tel" class="form-control1" placeholder="전화번호 입력 ('-' 제외)" maxlength="11" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthday" class="small-label">생일</label>
+                        <input type="date" id="birthday" name="birthday" class="form-control1" placeholder="생일 입력 (YYYY-MM-DD)" required>
+                    </div>
+                    <button type="submit" class="next-button">완료</button>
+                </form>
+            </div>
+        </div>
+
+        
+
+    </div>
+    
+    <script>
+        // DOM 요소 가져오기
+        const checkAll = document.getElementById('check-all');
+        const individualChecks = document.querySelectorAll('.individual-check');
+        const nextButton = document.getElementById('next-button');
+        const firstScreen = document.getElementById('first-screen');
+        const secondScreen = document.getElementById('second-screen');
+        const thirdScreen = document.getElementById("third-screen");
+    
+        // "전체 동의하기" 체크박스 클릭 이벤트
+        checkAll.addEventListener('change', function () {
+            const isChecked = checkAll.checked;
+            individualChecks.forEach((checkbox) => {
+                checkbox.checked = isChecked;
+            });
+            toggleNextButton();
+        });
+    
+        // 개별 체크박스 클릭 이벤트
+        individualChecks.forEach((checkbox) => {
+            checkbox.addEventListener('change', function () {
+                const allChecked = Array.from(individualChecks).every((checkbox) => checkbox.checked);
+                checkAll.checked = allChecked;
+                toggleNextButton();
+            });
+        });
+    
+        // 다음 버튼 활성화 토글 함수
+        function toggleNextButton() {
+            const allRequiredChecked = Array.from(individualChecks)
+                .slice(0, 2) // 필수 항목만 체크
+                .every((checkbox) => checkbox.checked);
+    
+            if (allRequiredChecked) {
+                nextButton.disabled = false;
+                nextButton.style.backgroundColor = '#000000'; // 활성화 스타일
+                nextButton.style.color = '#FFFFFF';
+                nextButton.style.cursor = 'pointer';
+            } else {
+                nextButton.disabled = true;
+                nextButton.style.backgroundColor = '#ccc'; // 비활성화 스타일
+                nextButton.style.cursor = 'not-allowed';
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            // 초기 상태 설정
+            document.getElementById("first-screen").style.display = "block"; // 첫 번째 화면 표시
+            document.getElementById("second-screen").style.display = "none"; // 두 번째 화면 숨기기
+            document.getElementById("third-screen").style.display = "none"; // 세 번째 화면 숨기기
+        });
+
+        // 첫 번째 -> 두 번째 화면 전환
+    nextButton.addEventListener("click", function () {
+        if (!this.disabled) {
+            firstScreen.style.display = "none";
+            secondScreen.style.display = "block";
+        }
+    });
+
+    // 두 번째 -> 세 번째 화면 전환
+    document.addEventListener("DOMContentLoaded", function () {
+        const emailInput = document.querySelector('input[name="email"]');
+        const submitButton = document.getElementById("submit-button");
+        const emailErrorDiv = document.createElement("div");
+        emailErrorDiv.className = "error";
+        emailInput.parentElement.appendChild(emailErrorDiv);
+    
+        // 엔터키를 눌렀을 때 다음 버튼 클릭 처리
+        emailInput.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // 기본 submit 동작 방지
+                if (!submitButton.disabled) {
+                    submitButton.click(); // 버튼 클릭 이벤트 트리거
+                }
+            }
+        });
+    
+        submitButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            const email = emailInput.value.trim();
+    
+            fetch("{% url 'users:store_session_data' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ email }),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    document.getElementById("second-screen").style.display = "none";
+                    document.getElementById("third-screen").style.display = "block";
+                } else {
+                    alert("세션 저장 중 오류가 발생했습니다.");
+                }
+            });
+        });
+    
+        // 이메일 입력 시 실시간 검증
+        emailInput.addEventListener("input", function () {
+            const emailValue = emailInput.value.trim();
+    
+            // AJAX 요청으로 이메일 유효성 검증
+            fetch("{% url 'users:validate_email' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ email: emailValue }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.valid) {
+                    emailInput.classList.remove("input-error");
+                    emailErrorDiv.textContent = "";
+                    enableSubmitButton();
+                } else {
+                    emailInput.classList.add("input-error");
+                    emailErrorDiv.textContent = data.error;
+                    disableSubmitButton();
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                emailInput.classList.add("input-error");
+                emailErrorDiv.textContent = "알 수 없는 오류가 발생했습니다.";
+                disableSubmitButton();
+            });
+    
+            // 이메일이 비어 있으면 초기화
+            if (emailValue === "") {
+                emailInput.classList.remove("input-error");
+                emailErrorDiv.textContent = "";
+                disableSubmitButton();
+            }
+        });
+    
+        function enableSubmitButton() {
+            submitButton.disabled = false;
+            submitButton.style.backgroundColor = "#000000";
+            submitButton.style.color = "#FFFFFF";
+            submitButton.style.cursor = "pointer";
+        }
+    
+        function disableSubmitButton() {
+            submitButton.disabled = true;
+            submitButton.style.backgroundColor = "#ccc";
+            submitButton.style.cursor = "not-allowed";
+        }
+    });
+    
+
+    const thirdNextButton = document.querySelector("#third-screen .next-button");
+
+    thirdNextButton.addEventListener("click", function () {
+        const thirdScreen = document.getElementById("third-screen");
+            const fourthScreen = document.getElementById("fourth-screen");
+
+        // 세 번째 화면에서 네 번째 화면으로 전환
+        thirdScreen.style.display = "none";
+        fourthScreen.style.display = "block";
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password"); // 비밀번호 입력 필드
+        const passwordConfirmInput = document.getElementById("password1"); // 비밀번호 확인 필드
+        const nextButton = document.querySelector("#third-screen .next-button"); // "다음" 버튼
+        const passwordMatchHint = document.getElementById("password-match-hint"); // 비밀번호 일치 텍스트
+        const passwordCriteriaHint = document.querySelector(".input-hint"); // 비밀번호 조건 텍스트
+        const thirdScreen = document.getElementById("third-screen"); // 세 번째 화면
+        const fourthScreen = document.getElementById("fourth-screen"); // 네 번째 화면
+    
+        // 비밀번호 조건 검증 함수
+        function isPasswordValid(password) {
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
+            return passwordRegex.test(password);
+        }
+    
+        // 비밀번호 일치 및 조건 검증 함수
+        function checkPasswordMatch() {
+            const password = passwordInput.value.trim(); // 비밀번호 입력값
+            const confirmPassword = passwordConfirmInput.value.trim(); // 비밀번호 확인 입력값
+            const isValid = isPasswordValid(password); // 비밀번호 조건 체크 결과
+    
+            // 비밀번호가 비어 있는 경우 버튼 비활성화
+            if (password === "") {
+                disableNextButton();
+                return;
+            }
+    
+            // 비밀번호 조건 충족 여부
+            if (isValid) {
+                passwordCriteriaHint.style.color = "#007BFF"; // 조건 충족 시 파란색
+            } else {
+                passwordCriteriaHint.style.color = "#6c757d"; // 조건 미충족 시 회색
+            }
+    
+            // 비밀번호 일치 여부
+            if (password === confirmPassword && isValid) {
+                passwordMatchHint.style.color = "#007BFF"; // 비밀번호 일치 시 파란색
+                enableNextButton(); // 버튼 활성화
+            } else {
+                passwordMatchHint.style.color = "#6c757d"; // 비밀번호 불일치 시 회색
+                disableNextButton(); // 버튼 비활성화
+            }
+        }
+    
+        // "다음" 버튼 활성화 함수
+        function enableNextButton() {
+            nextButton.disabled = false;
+            nextButton.style.backgroundColor = "#000000"; // 활성화 스타일
+            nextButton.style.color = "#FFFFFF";
+            nextButton.style.cursor = "pointer";
+        }
+    
+        // "다음" 버튼 비활성화 함수
+        function disableNextButton() {
+            nextButton.disabled = true;
+            nextButton.style.backgroundColor = "#f4f4f4"; // 비활성화 스타일
+            nextButton.style.cursor = "not-allowed";
+        }
+    
+        // "다음" 버튼 클릭 이벤트
+        nextButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            const password = document.querySelector('input[name="password"]').value;
+    
+            fetch("{% url 'users:store_session_data' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ password }),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    thirdScreen.style.display = "none";
+                    fourthScreen.style.display = "block";
+                } else {
+                    alert("세션 저장 중 오류가 발생했습니다.");
+                }
+            });
+        });
+    
+        // 이벤트 리스너 추가
+        passwordInput.addEventListener("input", checkPasswordMatch);
+        passwordConfirmInput.addEventListener("input", checkPasswordMatch);
+    
+        // 페이지 로드 시 초기 버튼 상태 설정
+        disableNextButton();
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInputs = document.querySelectorAll('.input-container input[type="password"]');
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+    
+        toggleButtons.forEach((toggleButton, index) => {
+            toggleButton.addEventListener("click", function () {
+                const passwordInput = passwordInputs[index];
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+                toggleButton.textContent = isPassword ? "🙈" : "👁️"; // 아이콘 변경
+            });
+        });
+    });
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const nameInput = document.getElementById("name");
+        const telInput = document.getElementById("tel");
+        const birthdayInput = document.getElementById("birthday");
+        const completeButton = document.querySelector("#fourth-screen .next-button");
+    
+        // 초기 버튼 비활성화
+        disableCompleteButton();
+    
+        // 모든 입력 필드에 이벤트 리스너 추가
+        [nameInput, telInput, birthdayInput].forEach((input) => {
+            input.addEventListener("input", validateForm);
+        });
+    
+        // 폼 검증 함수
+        function validateForm() {
+            const isNameValid = nameInput.value.trim() !== "";
+            const isTelValid = telInput.value.trim() !== "" && telInput.value.trim().length === 11; // 전화번호 길이 체크
+            const isBirthdayValid = birthdayInput.value.trim() !== "";
+    
+            if (isNameValid && isTelValid && isBirthdayValid) {
+                enableCompleteButton();
+            } else {
+                disableCompleteButton();
+            }
+        }
+    
+        // 버튼 활성화 함수
+        function enableCompleteButton() {
+            completeButton.disabled = false;
+            completeButton.style.backgroundColor = "#000000";
+            completeButton.style.color = "#FFFFFF";
+            completeButton.style.cursor = "pointer";
+        }
+    
+        // 버튼 비활성화 함수
+        function disableCompleteButton() {
+            completeButton.disabled = true;
+            completeButton.style.backgroundColor = "#ccc";
+            completeButton.style.cursor = "not-allowed";
+        }
+    });
+    
+    
+    
+    </script>
+    <style>
+        .error {
+            color: #D53F00; /* 글자색을 빨간색으로 설정 */
+            font-size: 13px; /* 글자 크기 조정 (선택 사항) */
+            margin-top: 5px; /* 위아래 간격 추가 */
+        }
+        .input-error {
+            border: 2px solid #D53F00; /* 테두리를 빨간색으로 설정 */
+            border-radius: 4px; /* 둥근 모서리 */
+            border-width: 1px;
+        }
+    </style>
+{% endblock content %}

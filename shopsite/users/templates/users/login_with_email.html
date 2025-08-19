@@ -1,0 +1,32 @@
+{% extends "shop/base.html" %}
+    {% block page_title %}
+        Login
+    {% endblock page_title %}
+    {% block search-bar %}
+    {% endblock search-bar %}
+    {% block content %}
+    <div class="bigdiv">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/log.css' %}">
+        <span class="spanname">
+            이메일로
+            <br>
+            로그인/회원가입하기
+        </span>
+        <div class="logdiv">
+        <form method="post" action="{% url 'users:login_email' %}">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="small-label">{{ form.email.label }}</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="small-label">{{ form.password.label }}</label>
+                {{ form.password }}
+            </div>
+            <button class="submit-button">로그인</button>
+        </form>
+        <button class="signup-button" onclick="location.href='{% url 'users:join_email' %}'">이메일로 가입하기</button>
+        </div>
+    </div>
+    {% endblock content %}

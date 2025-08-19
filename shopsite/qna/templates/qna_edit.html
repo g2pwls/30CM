@@ -1,0 +1,75 @@
+
+{% block body %}
+
+<h1>Qna Edit</h1>
+
+<form action="" method='POST'>
+    {% csrf_token %}
+    <label for="qnacate">문의내용</label>
+    <select id="qnacate" name="Qnacategory">
+        {% for qnacate in QnaCategories %}
+        <option value="{{ qnacate.pk }}" {% if qnacate.pk == qna.category.pk %}selected{% endif %}>
+                {{ qnacate.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <label for="title">제목</label>
+    <input id='title' type="text" name='title' value="{{ qna.title }}">
+    <label for="content">내용</label>
+    <textarea name="content" id="content" cols="30" rows="10">{{ qna.content }}</textarea>
+    <label>
+        <input type="checkbox" name="is_private" {% if qna.is_private %}checked{% endif %}> 비밀글로 설정
+    </label>
+    <input type="submit" value='Update!'>
+</form>
+
+<script>
+    function submitEditForm(event, pk) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        
+        // CSRF 토큰을 FormData에 추가
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+        fetch(`/qna/${pk}/edit/`, {
+            method: 'POST',
+            body: formData  // FormData 자체를 body로 전송
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("수정에 실패했습니다.");
+            }
+            return response.json();  // JSON으로 응답 받음
+        })
+        .then(data => {
+            if (data.success) {
+                location.reload();  // 성공 시 페이지 새로고침
+            } else {
+                alert("수정에 실패했습니다.");
+            }
+        })
+        
+        .catch(error => console.error("수정 폼 제출 중 오류:", error));
+    }
+
+    // CSRF 토큰을 가져오는 함수
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+
+{% endblock %}

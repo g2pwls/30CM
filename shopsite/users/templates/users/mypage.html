@@ -1,0 +1,42 @@
+{% extends 'users/base_mypage.html' %}
+
+{% block mypage_content %}
+<div class="user-info">
+    <h1>마이페이지</h1>
+    <table class="table">
+        <tr>
+            <th width="20%">이메일</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th>이름</th>
+            <td>{{ user.name }}</td>
+        </tr>
+        <tr>
+            <th>생년월일</th>
+            <td>{{ user.birthday }}</td>
+        </tr>
+        <tr>
+            <th>전화번호</th>
+            <td>{{ user.tel }}</td>
+        </tr>
+        <tr>
+            <th>우편번호</th>
+            <td>{{ user.postcode }}</td>
+        </tr>
+        <tr>
+            <th>주소</th>
+            <td>{{ user.address }}</td>
+        </tr>
+        <tr>
+            <th>상세주소</th>
+            <td>{{ user.detail_address }}</td>
+        </tr>
+        <tr>
+            <th>참고주소</th>
+            <td>{{ user.extra_address }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock mypage_content %}
+

@@ -1,0 +1,100 @@
+{% extends 'users/base_mypage.html' %}
+{% block mypage_content %}
+{% load static %}
+        <link rel="stylesheet" href="{% static 'css/update.css' %}">
+
+<h1>회원정보수정</h1>
+    <form action="{% url 'users:update' %}" method="POST">
+        {%csrf_token%}
+        
+        <div class="form-group">
+            <label for="id_name">이름</label>
+            {{ form.name }}
+        </div>
+        <div class="form-group">
+            <label for="id_email">이메일</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label for="id_tel">전화번호</label>
+            {{ form.tel }}
+        </div>
+        <div class="form-group">
+            <label for="id_birthday">생일</label>
+            {{ form.birthday }}
+        </div>
+        <div class="form-group">
+            <label for="id_postcode">우편번호 <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn-postcode"></label>
+            {{ form.postcode }}
+        </div>
+        <div class="form-group">
+            <label for="id_address">주소</label>
+            {{ form.address }}
+        </div>
+        <div class="form-group">
+            <label for="id_detail_address">상세주소</label>
+            {{ form.detail_address }}
+        </div>
+        <div class="form-group">
+            <label for="id_extra_address">참고항목</label>
+            {{ form.extra_address }}
+        </div>
+
+    <!DOCTYPE html>
+        <html>
+          <head>
+            <link rel='stylesheet' href='/stylesheets/style.css' />
+            <!-- jquery -->
+            <script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+            <script src="users/javascript/popup.js"></script>
+          </head>
+          <body>
+
+            <form method="post" action="">
+                {% csrf_token %}
+                
+                <script src="http://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+                <script>
+                    function sample6_execDaumPostcode() {
+                        new daum.Postcode({
+                            oncomplete: function(data) {
+                                // 주소 데이터를 조합합니다.
+                                var addr = ''; // 주소 변수
+                                var extraAddr = ''; // 참고항목 변수
+                
+                                if (data.userSelectedType === 'R') {
+                                    addr = data.roadAddress; // 도로명 주소
+                                } else {
+                                    addr = data.jibunAddress; // 지번 주소
+                                }
+                
+                                if (data.userSelectedType === 'R') {
+                                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                                        extraAddr += data.bname;
+                                    }
+                                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                                    }
+                                    if (extraAddr !== '') {
+                                        extraAddr = ' (' + extraAddr + ')';
+                                    }
+                                }
+                
+                                // 위의 폼에 데이터 전달
+                                document.getElementById("id_postcode").value = data.zonecode;
+                                document.getElementById("id_address").value = addr;
+                                document.getElementById("id_extra_address").value = extraAddr;
+                
+                                // 상세주소로 포커스 이동
+                                document.getElementById("id_detail_address").focus();
+                            }
+                        }).open();
+                    }
+                </script>
+            
+        <input type="submit" value="수정" class="form-submit-btn">
+
+    </form>
+    
+            
+    {% endblock mypage_content %}

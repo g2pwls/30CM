@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Info</title>
+</head>
+<body>
+    <h1>결제 내역</h1>
+    {% if orders %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>주문 번호</th>
+                    <th>결제 금액</th>
+                    <th>상태</th>
+                    <th>결제 시간</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.merchant_uid }}</td>
+                        <td>{{ order.amount }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>결제 내역이 없습니다.</p>
+    {% endif %}
+</body>
+</html>

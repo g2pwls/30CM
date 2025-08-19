@@ -1,0 +1,85 @@
+{% extends 'users/base_mypage.html' %}
+{% block mypage_content %}
+
+<div class="product-qna-container">
+    <h1>나의 상품 Q&A 내역</h1>
+    <hr class="custom-hr">
+    {% if qnas %}
+        <table class="table table-striped">
+            <thead>
+                <tr class="header-row">
+                    <th>상품 번호</th>
+                    <th>상품명</th>
+                    <th>문의 내용</th>
+                    <th>작성일</th>
+                    <th>답변 유무</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for qna in qnas %}
+                <tr>
+                    <td>{{ qna.product.id }}</td>
+                    <td><a href="{% url 'shop:product_detail' qna.product.id %}">{{ qna.product.name }}</a></td>
+                    <td><a href="{% url 'qna:detail' qna.id %}">{{ qna.title }}</a></td>
+                    <td>{{ qna.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if qna.reply %}
+                            <span class="badge badge-success">답변 완료</span>
+                        {% else %}
+                            <span class="badge badge-danger">미답변</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>작성한 Q&A가 없습니다.</p>
+    {% endif %}
+</div>
+
+<style>
+    .product-qna-container {
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 900px;
+    }
+
+    .custom-hr {
+        border: none;
+        height: 3px;
+        background-color: #000; /* 진한 검정색 선 */
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead .header-row {
+        border-bottom: 3px solid #f4f4f4; /* 헤더 아래 굵은 검정색 선 */
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        color: white;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+</style>
+
+{% endblock mypage_content %}
